@@ -4,7 +4,7 @@ import (
 	"github.com/gin-gonic/gin"
 	swaggerFiles "github.com/swaggo/files"
 	ginSwagger "github.com/swaggo/gin-swagger"
-	"github.com/swaggo/swag/example/basic/docs"
+	"github.com/yehey-1030/household-account-book/go/cmd/household-account-book/docs"
 )
 
 func InitSwagger(r *gin.Engine, endpointHost string) {

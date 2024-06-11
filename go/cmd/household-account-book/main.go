@@ -7,6 +7,17 @@ import (
 	"time"
 )
 
+// @title HAB Household Account Book Server
+// @version 1.0
+// @description Household Account Book Service API
+
+// @contact.name yehey-1030
+// @contact.url
+// @context.email
+
+// @license
+
+// @BasePath
 var (
 	Version   string
 	BuildAt   string
