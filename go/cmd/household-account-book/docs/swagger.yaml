@@ -1,0 +1,8 @@
+info:
+  contact:
+    name: yehey-1030
+  description: Household Account Book Service API
+  title: HAB Household Account Book Server
+  version: "1.0"
+paths: {}
+swagger: "2.0"

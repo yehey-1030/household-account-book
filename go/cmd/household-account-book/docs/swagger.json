@@ -1,0 +1,12 @@
+{
+    "swagger": "2.0",
+    "info": {
+        "description": "Household Account Book Service API",
+        "title": "HAB Household Account Book Server",
+        "contact": {
+            "name": "yehey-1030"
+        },
+        "version": "1.0"
+    },
+    "paths": {}
+}
