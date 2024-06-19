@@ -21,6 +21,7 @@ func Init() {
 
 func envInit() {
 	_ = env.Parse(&config.DBConfigInfo)
+	_ = env.Parse(&config.ServerConfigInfo)
 }
 
 func Run(startupMessage, version string) {
