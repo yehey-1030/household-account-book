@@ -1,6 +1,7 @@
 package servers
 
 import (
+	"errors"
 	"github.com/gin-gonic/gin"
 	"github.com/go-playground/validator/v10"
 	"github.com/sirupsen/logrus"
@@ -34,10 +35,12 @@ func SendError(ctx *gin.Context, err error) {
 
 func SendBindingError(ctx *gin.Context, bindingErr error) {
 	var domainErr *errmodel.BadRequestError
-	switch bindingErr.(type) {
-	case validator.ValidationErrors:
+	var validationErrors validator.ValidationErrors
+	switch {
+	case errors.As(bindingErr, &validationErrors):
 		var messageList []string
-		errs := bindingErr.(validator.ValidationErrors)
+		var errs validator.ValidationErrors
+		errors.As(bindingErr, &errs)
 		for _, err := range errs {
 			var message string
 			message += "Validation failed on field '" + err.Field() + "'"
@@ -125,15 +128,4 @@ func SendBulkResponse(ctx *gin.Context, appResults []errmodel.Result, err error)
 	}
 
 	ctx.JSON(http.StatusOK, BulkResponse{data, metaData})
-}
-
-func SendIdentityResponse(ctx *gin.Context, resHeader map[string][]string, resBody string, statusCode int) {
-	for k, v := range resHeader {
-		if len(v) > 0 {
-			ctx.Header(k, v[0])
-		}
-	}
-
-	ctx.Status(statusCode)
-	_, _ = ctx.Writer.Write([]byte(resBody))
 }

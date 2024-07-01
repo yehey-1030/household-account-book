@@ -8,11 +8,13 @@ import (
 	"github.com/yehey-1030/household-account-book/go/domain"
 	"github.com/yehey-1030/household-account-book/go/service"
 	"github.com/yehey-1030/household-account-book/go/util/ioutil"
+	"github.com/yehey-1030/household-account-book/go/util/timeutil"
 	"time"
 )
 
 type LedgerApplication interface {
 	List(ctx context.Context, query request.LedgerListRequest) (response.LedgerListResponse, error)
+	Create(ctx context.Context, req request.LedgerCreateRequest) (response.LedgerResponse, error)
 }
 
 type ledgerApplication struct {
@@ -41,6 +43,17 @@ func (l *ledgerApplication) List(ctx context.Context, query request.LedgerListRe
 		ledgers.LedgerList = append(ledgers.LedgerList, ledgerResponseFrom(ledger))
 	}
 	return ledgers, nil
+}
+
+func (l *ledgerApplication) Create(ctx context.Context, req request.LedgerCreateRequest) (response.LedgerResponse, error) {
+	targetDate := timeutil.StringToDate(req.Date)
+	toCreate := domain.NewLedger(0, req.Amount, req.Title, req.Memo, targetDate, req.IsExcluded, req.ArchiveTypeId)
+
+	created, err := l.ledgerService.Create(ctx, toCreate)
+	if err != nil {
+		return response.LedgerResponse{}, fmt.Errorf("[%s] %w", ioutil.FuncName(), err)
+	}
+	return ledgerResponseFrom(created), nil
 }
 
 func ledgerResponseFrom(ledger domain.Ledger) response.LedgerResponse {

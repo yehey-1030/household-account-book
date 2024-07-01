@@ -10,6 +10,7 @@ import (
 
 type LedgerService interface {
 	List(ctx context.Context, query domain.LedgerPagingQuery) ([]domain.Ledger, error)
+	Create(ctx context.Context, ledger domain.Ledger) (domain.Ledger, error)
 }
 
 type ledgerService struct {
@@ -26,4 +27,12 @@ func (l *ledgerService) List(ctx context.Context, query domain.LedgerPagingQuery
 		return nil, fmt.Errorf("[%s] %w", ioutil.FuncName(), err)
 	}
 	return ledgers, nil
+}
+
+func (l *ledgerService) Create(ctx context.Context, ledger domain.Ledger) (domain.Ledger, error) {
+	created, err := l.ledgerRepository.Create(ctx, ledger)
+	if err != nil {
+		return nil, fmt.Errorf("[%s] %w", ioutil.FuncName(), err)
+	}
+	return created, nil
 }

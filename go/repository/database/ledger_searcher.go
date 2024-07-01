@@ -11,12 +11,13 @@ import (
 )
 
 type Ledger struct {
-	LedgerId   int
-	Amount     int
-	Date       *time.Time
-	Title      string
-	Memo       string
-	IsExcluded bool
+	LedgerId      int
+	Amount        int
+	Date          *time.Time
+	Title         string
+	Memo          string
+	IsExcluded    bool
+	ArchiveTypeId int `gorm:"column:archivetype_id"`
 }
 
 func (l Ledger) TableName() string {
@@ -25,6 +26,7 @@ func (l Ledger) TableName() string {
 
 type LedgerSearcher interface {
 	List(ctx context.Context, pagingQuery domain.LedgerPagingQuery) ([]domain.Ledger, error)
+	Create(ctx context.Context, ledger domain.Ledger) (domain.Ledger, error)
 }
 
 type ledgerSearcher struct {
@@ -63,6 +65,32 @@ func (l *ledgerSearcher) List(ctx context.Context, pagingQuery domain.LedgerPagi
 	return ledgerList, nil
 }
 
+func (l *ledgerSearcher) Create(ctx context.Context, ledger domain.Ledger) (domain.Ledger, error) {
+	db := gorm_tx.FromContextWithDefault(ctx, l.db)
+
+	ledgerDto := ledgerDtoFrom(ledger)
+
+	result := db.Create(&ledgerDto)
+	if result.Error != nil {
+		return nil, fmt.Errorf("[%s] %w", ioutil.FuncName(), result.Error)
+	}
+
+	created := ledgerFrom(ledgerDto)
+	return created, nil
+}
+
 func ledgerFrom(l Ledger) domain.Ledger {
-	return domain.NewLedger(l.LedgerId, l.Amount, l.Title, l.Memo, l.Date, l.IsExcluded)
+	return domain.NewLedger(l.LedgerId, l.Amount, l.Title, l.Memo, l.Date, l.IsExcluded, l.ArchiveTypeId)
+}
+
+func ledgerDtoFrom(l domain.Ledger) Ledger {
+	return Ledger{
+		LedgerId:      0,
+		Title:         l.Title(),
+		Memo:          l.Memo(),
+		Amount:        l.Amount(),
+		Date:          l.Date(),
+		IsExcluded:    l.IsExcluded(),
+		ArchiveTypeId: l.ArchiveTypeId(),
+	}
 }

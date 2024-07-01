@@ -23,6 +23,7 @@ func NewLegerRouter(ledgerApplication app.LedgerApplication) *LedgerRouter {
 func (r *LedgerRouter) Routes() []handler.Route {
 	return []handler.Route{
 		handler.NewRoute(http.MethodGet, fmt.Sprintf("%s/ledgers", r.prefix), r.list),
+		handler.NewRoute(http.MethodPost, fmt.Sprintf("%s/ledgers", r.prefix), r.create),
 	}
 }
 
@@ -37,5 +38,16 @@ func (r *LedgerRouter) list(ctx *gin.Context) {
 	}
 
 	response, err := r.ledgerApplication.List(ctx, req)
+	servers.SendResponse(ctx, response, err)
+}
+
+func (r *LedgerRouter) create(ctx *gin.Context) {
+	var req request.LedgerCreateRequest
+	if err := ctx.ShouldBind(&req); err != nil {
+		servers.SendBindingError(ctx, err)
+		return
+	}
+
+	response, err := r.ledgerApplication.Create(ctx, req)
 	servers.SendResponse(ctx, response, err)
 }
