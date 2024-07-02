@@ -5,6 +5,7 @@ import (
 	"github.com/stretchr/testify/suite"
 	"github.com/yehey-1030/household-account-book/go/domain"
 	"github.com/yehey-1030/household-account-book/go/repository/database"
+	"github.com/yehey-1030/household-account-book/go/util/timeutil"
 	"gorm.io/driver/sqlite"
 	"gorm.io/gorm"
 	"gorm.io/gorm/logger"
@@ -78,4 +79,15 @@ func (s *LedgerSearcherSuite) TestList() {
 	list, err := s.ledgerSearcher.List(ctx, query)
 	s.Nil(err)
 	s.Len(list, 2)
+}
+
+func (s *LedgerSearcherSuite) TestCreate() {
+	ctx := context.Background()
+
+	today := "2024-07-02"
+	toCreate := domain.NewLedger(0, 10000, "test", "test", timeutil.StringToDate(today), false, 3)
+
+	created, err := s.ledgerSearcher.Create(ctx, toCreate)
+	s.Nil(err)
+	s.Equal(created.Amount(), 10000)
 }
