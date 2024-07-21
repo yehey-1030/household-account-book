@@ -16,7 +16,7 @@ type ArchiveType struct {
 
 type ArchiveTypeSearcher interface {
 	List(ctx context.Context) ([]domain.ArchiveType, error)
-	Get(ctx context.Context, id int) (domain.ArchiveType, error)
+	GetById(ctx context.Context, id int) (domain.ArchiveType, error)
 }
 
 type archiveTypeSearcher struct {
@@ -31,7 +31,7 @@ func (a *archiveTypeSearcher) List(ctx context.Context) ([]domain.ArchiveType, e
 	db := gorm_tx.FromContextWithDefault(ctx, a.db)
 
 	var archiveTypes []ArchiveType
-	result := db.Model(&ArchiveType{}).Find(archiveTypes)
+	result := db.Model(&ArchiveType{}).Find(&archiveTypes)
 	if result.Error != nil {
 		return nil, fmt.Errorf("[%s] %w", ioutil.FuncName(), result.Error)
 	}
@@ -44,7 +44,7 @@ func (a *archiveTypeSearcher) List(ctx context.Context) ([]domain.ArchiveType, e
 	return archiveTypeList, nil
 }
 
-func (a *archiveTypeSearcher) Get(ctx context.Context, id int) (domain.ArchiveType, error) {
+func (a *archiveTypeSearcher) GetById(ctx context.Context, id int) (domain.ArchiveType, error) {
 	db := gorm_tx.FromContextWithDefault(ctx, a.db)
 
 	var archiveType ArchiveType
