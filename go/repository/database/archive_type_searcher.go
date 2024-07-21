@@ -14,6 +14,10 @@ type ArchiveType struct {
 	TypeName      string
 }
 
+func (a ArchiveType) TableName() string {
+	return "archive_type"
+}
+
 type ArchiveTypeSearcher interface {
 	List(ctx context.Context) ([]domain.ArchiveType, error)
 	GetById(ctx context.Context, id int) (domain.ArchiveType, error)

@@ -80,7 +80,7 @@ func (t *tagSearcher) Create(ctx context.Context, tag domain.Tag) (domain.Tag, e
 
 	tagDto := tagDtoFrom(tag)
 
-	result := db.Create(tagDto)
+	result := db.Create(&tagDto)
 	if result.Error != nil {
 		return nil, fmt.Errorf("[%s] %w", ioutil.FuncName(), result.Error)
 	}
