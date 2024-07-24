@@ -5,3 +5,7 @@ type CreateTagRequest struct {
 	ParentId      int    `json:"parent_id"`
 	Name          string `json:"name"`
 }
+
+type UriParentId struct {
+	ParentId int `json:"parent_id" uri:"parent_id"`
+}

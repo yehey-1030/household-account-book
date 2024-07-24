@@ -16,12 +16,16 @@ import (
 
 func GetMiddleWares(startupMessage, version string, db *gormlib.DB) ([]gin.HandlerFunc, []handler.Router) {
 	var ledgerSearcher = database.NewLedgerSearcher(db)
+	var tagSearcher = database.NewTagSearcher(db)
 
 	var ledgerRepository = repository.NewLedgerSearcher(ledgerSearcher)
+	var tagRepository = repository.TagRepository(tagSearcher)
 
 	var ledgerService = service.NewLedgerService(ledgerRepository)
+	var tagService = service.NewTagService(tagRepository)
 
 	var ledgerApplication = app.NewLedgerApplication(ledgerService)
+	var tagApplication = app.NewTagApplication(tagService)
 
 	handlerFuncs := []gin.HandlerFunc{
 		gin.LoggerWithConfig(logger.GinLoggerConfig),
@@ -30,6 +34,7 @@ func GetMiddleWares(startupMessage, version string, db *gormlib.DB) ([]gin.Handl
 	}
 	routers := []handler.Router{
 		router.NewLegerRouter(ledgerApplication),
+		router.NewTagRouter(tagApplication),
 	}
 	return handlerFuncs, routers
 }
