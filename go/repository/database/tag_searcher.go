@@ -21,6 +21,16 @@ func (t Tag) TableName() string {
 	return "tag"
 }
 
+type TagLedgerRelation struct {
+	RelationId int
+	TagId      int
+	LedgerId   int
+}
+
+func (r TagLedgerRelation) TableName() string {
+	return "tag_ledger_relation"
+}
+
 type TagSearcher interface {
 	ListByParent(ctx context.Context, parentId int) ([]domain.Tag, error)
 	ListRootTag(ctx context.Context, archiveTypeId int) ([]domain.Tag, error)

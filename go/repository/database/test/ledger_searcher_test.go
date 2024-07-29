@@ -34,12 +34,12 @@ func (s *LedgerSearcherSuite) SetupTest() {
 	})
 
 	var err error
-	s.db, err = gorm.Open(sqlite.Open("file::memory:"), &gorm.Config{Logger: logConfig})
+	s.db, err = gorm.Open(sqlite.Open("file::memory:?cache=shared"), &gorm.Config{Logger: logConfig})
 	if err != nil {
 		panic("failed to connect database")
 	}
 
-	_ = s.db.AutoMigrate(&database.Ledger{})
+	_ = s.db.AutoMigrate(&database.Tag{}, &database.Ledger{}, &database.TagLedgerRelation{})
 	s.date = time.Now().UTC()
 
 	ledger1 := database.Ledger{
@@ -58,6 +58,28 @@ func (s *LedgerSearcherSuite) SetupTest() {
 	}
 	s.db.Create(ledger1)
 	s.db.Create(ledger2)
+
+	tag1 := database.Tag{
+		TagId:   1,
+		TagName: "tag1",
+	}
+	tag2 := database.Tag{
+		TagId:   2,
+		TagName: "tag2",
+	}
+	s.db.Create(tag1)
+	s.db.Create(tag2)
+
+	tagLedger1 := database.TagLedgerRelation{
+		TagId:    1,
+		LedgerId: 1,
+	}
+	tagLedger2 := database.TagLedgerRelation{
+		TagId:    2,
+		LedgerId: 1,
+	}
+	s.db.Create(tagLedger1)
+	s.db.Create(tagLedger2)
 
 	s.ledgerSearcher = database.NewLedgerSearcher(s.db)
 }

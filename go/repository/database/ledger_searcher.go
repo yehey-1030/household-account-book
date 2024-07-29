@@ -17,7 +17,8 @@ type Ledger struct {
 	Title         string
 	Memo          string
 	IsExcluded    bool
-	ArchiveTypeId int `gorm:"column:archivetype_id"`
+	ArchiveTypeId int   `gorm:"column:archivetype_id"`
+	Tags          []Tag `gorm:"many2many:tag_ledger_relation;foreignKey:LedgerId;joinForeignKey:LedgerId;references:TagId;joinReferences:TagId;"`
 }
 
 func (l Ledger) TableName() string {
@@ -40,7 +41,7 @@ func NewLedgerSearcher(db *gorm.DB) LedgerSearcher {
 func (l *ledgerSearcher) List(ctx context.Context, pagingQuery domain.LedgerPagingQuery) ([]domain.Ledger, error) {
 	db := gorm_tx.FromContextWithDefault(ctx, l.db)
 
-	result := db.Model(&Ledger{})
+	result := db.Model(&Ledger{}).Preload("Tags")
 	//Where("ledger.archivetype_id = ?", pagingQuery.ArchiveTypeId)
 
 	if !pagingQuery.StartDate.IsZero() {
