@@ -81,7 +81,11 @@ func (l *ledgerSearcher) Create(ctx context.Context, ledger domain.Ledger) (doma
 }
 
 func ledgerFrom(l Ledger) domain.Ledger {
-	return domain.NewLedger(l.LedgerId, l.Amount, l.Title, l.Memo, l.Date, l.IsExcluded, l.ArchiveTypeId)
+	var tags []domain.Tag
+	for _, tag := range l.Tags {
+		tags = append(tags, domain.NewTag(tag.TagId, tag.TagName, ioutil.NullIntToInt(tag.ParentId), tag.ArchiveTypeId))
+	}
+	return domain.NewLedger(l.LedgerId, l.Amount, l.Title, l.Memo, l.Date, l.IsExcluded, l.ArchiveTypeId, tags)
 }
 
 func ledgerDtoFrom(l domain.Ledger) Ledger {

@@ -107,7 +107,7 @@ func (s *LedgerSearcherSuite) TestCreate() {
 	ctx := context.Background()
 
 	today := "2024-07-02"
-	toCreate := domain.NewLedger(0, 10000, "test", "test", timeutil.StringToDate(today), false, 3)
+	toCreate := domain.NewLedger(0, 10000, "test", "test", timeutil.StringToDate(today), false, 3, nil)
 
 	created, err := s.ledgerSearcher.Create(ctx, toCreate)
 	s.Nil(err)
