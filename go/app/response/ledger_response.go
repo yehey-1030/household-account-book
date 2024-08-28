@@ -3,10 +3,13 @@ package response
 import "time"
 
 type LedgerResponse struct {
-	Title  string    `json:"title"`
-	Memo   string    `json:"memo"`
-	Amount int       `json:"amount"`
-	Date   time.Time `json:"date"`
+	LedgerId      int       `json:"ledgerID"`
+	Title         string    `json:"title"`
+	Memo          string    `json:"memo"`
+	Amount        int       `json:"amount"`
+	Date          time.Time `json:"date"`
+	IsExcluded    bool      `json:"isExcluded"`
+	ArchiveTypeId int       `json:"archiveTypeId"`
 }
 
 type LedgerListResponse struct {

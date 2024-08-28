@@ -39,22 +39,29 @@ func (s *LedgerSearcherSuite) SetupTest() {
 		panic("failed to connect database")
 	}
 
-	_ = s.db.AutoMigrate(&database.Tag{}, &database.Ledger{}, &database.TagLedgerRelation{})
+	_ = s.db.AutoMigrate(&database.Tag{}, &database.Ledger{}, &database.TagLedgerRelation{}, &database.ArchiveType{})
 	s.date = time.Now().UTC()
 
+	archiveType := database.ArchiveType{
+		ArchiveTypeId: 1,
+		TypeName:      "at-1",
+	}
+	s.db.Create(archiveType)
 	ledger1 := database.Ledger{
-		LedgerId: 1,
-		Title:    "l-1",
-		Memo:     "l-1",
-		Amount:   10,
-		Date:     &s.date,
+		LedgerId:      1,
+		Title:         "l-1",
+		Memo:          "l-1",
+		Amount:        10,
+		Date:          &s.date,
+		ArchiveTypeId: 1,
 	}
 	ledger2 := database.Ledger{
-		LedgerId: 2,
-		Title:    "l-2",
-		Memo:     "l-2",
-		Amount:   20,
-		Date:     &s.date,
+		LedgerId:      2,
+		Title:         "l-2",
+		Memo:          "l-2",
+		Amount:        20,
+		Date:          &s.date,
+		ArchiveTypeId: 1,
 	}
 	s.db.Create(ledger1)
 	s.db.Create(ledger2)
