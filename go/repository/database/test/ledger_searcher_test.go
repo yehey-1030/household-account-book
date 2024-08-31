@@ -5,7 +5,6 @@ import (
 	"github.com/stretchr/testify/suite"
 	"github.com/yehey-1030/household-account-book/go/domain"
 	"github.com/yehey-1030/household-account-book/go/repository/database"
-	"github.com/yehey-1030/household-account-book/go/util/timeutil"
 	"gorm.io/driver/sqlite"
 	"gorm.io/gorm"
 	"gorm.io/gorm/logger"
@@ -34,7 +33,7 @@ func (s *LedgerSearcherSuite) SetupTest() {
 	})
 
 	var err error
-	s.db, err = gorm.Open(sqlite.Open("file::memory:?cache=shared"), &gorm.Config{Logger: logConfig})
+	s.db, err = gorm.Open(sqlite.Open("file::memory:"), &gorm.Config{Logger: logConfig})
 	if err != nil {
 		panic("failed to connect database")
 	}
@@ -63,8 +62,8 @@ func (s *LedgerSearcherSuite) SetupTest() {
 		Date:          &s.date,
 		ArchiveTypeId: 1,
 	}
-	s.db.Create(ledger1)
-	s.db.Create(ledger2)
+	s.db.Omit("Tags").Omit("ArchiveType").Create(ledger1)
+	s.db.Omit("Tags").Omit("ArchiveType").Create(ledger2)
 
 	tag1 := database.Tag{
 		TagId:   1,
@@ -100,7 +99,7 @@ func (s *LedgerSearcherSuite) TestList() {
 
 	query := domain.LedgerPagingQuery{
 		StartDate:     s.date.AddDate(-1, 0, 0),
-		EndDate:       s.date.AddDate(0, 1, 0),
+		EndDate:       s.date.AddDate(0, 0, 1),
 		TagId:         1,
 		ArchiveTypeId: 1,
 	}
@@ -113,8 +112,9 @@ func (s *LedgerSearcherSuite) TestList() {
 func (s *LedgerSearcherSuite) TestCreate() {
 	ctx := context.Background()
 
-	today := "2024-07-02"
-	toCreate := domain.NewLedger(0, 10000, "test", "test", timeutil.StringToDate(today), false, 3, nil)
+	today := s.date.AddDate(0, 1, 0)
+	archiveType := domain.NewArchiveType(3, "at-3")
+	toCreate := domain.NewLedger(0, 10000, "test", "test", &today, false, archiveType, nil)
 
 	created, err := s.ledgerSearcher.Create(ctx, toCreate)
 	s.Nil(err)

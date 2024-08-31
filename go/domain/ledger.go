@@ -10,6 +10,7 @@ type Ledger interface {
 	Amount() int
 	IsExcluded() bool
 	ArchiveTypeId() int
+	ArchiveType() ArchiveType
 	Tags() []Tag
 }
 
@@ -21,6 +22,7 @@ type ledger struct {
 	memo          string
 	isExcluded    bool
 	archiveTypeId int
+	archiveType   ArchiveType
 	tags          []Tag
 }
 
@@ -51,12 +53,16 @@ func (l *ledger) IsExcluded() bool {
 func (l *ledger) ArchiveTypeId() int {
 	return l.archiveTypeId
 }
+
+func (l *ledger) ArchiveType() ArchiveType {
+	return l.archiveType
+}
 func (l *ledger) Tags() []Tag {
 	return l.tags
 }
 
-func NewLedger(id, amount int, title, memo string, date *time.Time, isExcluded bool, archiveTypeId int, tags []Tag) Ledger {
-	return &ledger{ledgerId: id, amount: amount, title: title, memo: memo, date: date, isExcluded: isExcluded, archiveTypeId: archiveTypeId, tags: tags}
+func NewLedger(id, amount int, title, memo string, date *time.Time, isExcluded bool, archiveType ArchiveType, tags []Tag) Ledger {
+	return &ledger{ledgerId: id, amount: amount, title: title, memo: memo, date: date, isExcluded: isExcluded, archiveType: archiveType, tags: tags}
 }
 
 type LedgerPagingQuery struct {

@@ -88,7 +88,7 @@ func (t *tagSearcher) ListRootTag(ctx context.Context, archiveTypeId int) ([]dom
 func (t *tagSearcher) Create(ctx context.Context, tag domain.Tag) (domain.Tag, error) {
 	db := gorm_tx.FromContextWithDefault(ctx, t.db)
 
-	tagDto := tagDtoFrom(tag)
+	tagDto := TagDtoFrom(tag)
 
 	result := db.Create(&tagDto)
 	if result.Error != nil {
@@ -103,7 +103,7 @@ func tagFrom(tag Tag) domain.Tag {
 	return domain.NewTag(tag.TagId, tag.TagName, ioutil.NullIntToInt(tag.ParentId), tag.ArchiveTypeId)
 }
 
-func tagDtoFrom(tag domain.Tag) Tag {
+func TagDtoFrom(tag domain.Tag) Tag {
 	return Tag{
 		TagId:         0,
 		TagName:       tag.Name(),

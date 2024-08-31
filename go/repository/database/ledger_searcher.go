@@ -43,6 +43,7 @@ func (l *ledgerSearcher) List(ctx context.Context, pagingQuery domain.LedgerPagi
 	db := gorm_tx.FromContextWithDefault(ctx, l.db)
 
 	result := db.Model(&Ledger{}).Preload("Tags").Preload("ArchiveType")
+
 	//Where("ledger.archivetype_id = ?", pagingQuery.ArchiveTypeId)
 
 	if !pagingQuery.StartDate.IsZero() {
@@ -55,7 +56,7 @@ func (l *ledgerSearcher) List(ctx context.Context, pagingQuery domain.LedgerPagi
 	result = result.Order("ledger.date ASC")
 
 	var ledgers []Ledger
-	result = result.Find(&ledgers)
+	result = result.Find(&ledgers).Distinct()
 	if result.Error != nil {
 		return nil, fmt.Errorf("[%s] %w", ioutil.FuncName(), result.Error)
 	}
@@ -72,7 +73,7 @@ func (l *ledgerSearcher) Create(ctx context.Context, ledger domain.Ledger) (doma
 
 	ledgerDto := ledgerDtoFrom(ledger)
 
-	result := db.Create(&ledgerDto)
+	result := db.Omit("Tags").Create(&ledgerDto)
 	if result.Error != nil {
 		return nil, fmt.Errorf("[%s] %w", ioutil.FuncName(), result.Error)
 	}
@@ -86,10 +87,15 @@ func ledgerFrom(l Ledger) domain.Ledger {
 	for _, tag := range l.Tags {
 		tags = append(tags, domain.NewTag(tag.TagId, tag.TagName, ioutil.NullIntToInt(tag.ParentId), tag.ArchiveTypeId))
 	}
-	return domain.NewLedger(l.LedgerId, l.Amount, l.Title, l.Memo, l.Date, l.IsExcluded, l.ArchiveTypeId, tags)
+	archiveType := domain.NewArchiveType(l.ArchiveType.ArchiveTypeId, l.ArchiveType.TypeName)
+	return domain.NewLedger(l.LedgerId, l.Amount, l.Title, l.Memo, l.Date, l.IsExcluded, archiveType, tags)
 }
 
 func ledgerDtoFrom(l domain.Ledger) Ledger {
+	var tags []Tag
+	for _, t := range l.Tags() {
+		tags = append(tags, TagDtoFrom(t))
+	}
 	return Ledger{
 		LedgerId:      0,
 		Title:         l.Title(),
@@ -97,6 +103,7 @@ func ledgerDtoFrom(l domain.Ledger) Ledger {
 		Amount:        l.Amount(),
 		Date:          l.Date(),
 		IsExcluded:    l.IsExcluded(),
-		ArchiveTypeId: l.ArchiveTypeId(),
+		ArchiveTypeId: l.ArchiveType().Id(),
+		Tags:          tags,
 	}
 }
