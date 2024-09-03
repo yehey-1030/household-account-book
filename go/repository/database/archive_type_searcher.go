@@ -42,7 +42,7 @@ func (a *archiveTypeSearcher) List(ctx context.Context) ([]domain.ArchiveType, e
 
 	var archiveTypeList []domain.ArchiveType
 	for _, a := range archiveTypes {
-		archiveTypeList = append(archiveTypeList, archiveTypeFrom(a))
+		archiveTypeList = append(archiveTypeList, ArchiveTypeFrom(a))
 	}
 
 	return archiveTypeList, nil
@@ -57,9 +57,9 @@ func (a *archiveTypeSearcher) GetById(ctx context.Context, id int) (domain.Archi
 		return nil, fmt.Errorf("[%s] %w", ioutil.FuncName(), result.Error)
 	}
 
-	return archiveTypeFrom(archiveType), nil
+	return ArchiveTypeFrom(archiveType), nil
 }
 
-func archiveTypeFrom(a ArchiveType) domain.ArchiveType {
+func ArchiveTypeFrom(a ArchiveType) domain.ArchiveType {
 	return domain.NewArchiveType(a.ArchiveTypeId, a.TypeName)
 }

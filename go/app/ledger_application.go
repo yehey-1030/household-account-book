@@ -47,7 +47,9 @@ func (l *ledgerApplication) List(ctx context.Context, query request.LedgerListRe
 
 func (l *ledgerApplication) Create(ctx context.Context, req request.LedgerCreateRequest) (response.LedgerResponse, error) {
 	targetDate := timeutil.StringToDate(req.Date)
-	toCreate := domain.NewLedger(0, req.Amount, req.Title, req.Memo, targetDate, req.IsExcluded, req.ArchiveTypeId)
+	archiveType := domain.NewArchiveType(req.ArchiveTypeId, "")
+
+	toCreate := domain.NewLedger(0, req.Amount, req.Title, req.Memo, targetDate, req.IsExcluded, archiveType, nil)
 
 	created, err := l.ledgerService.Create(ctx, toCreate)
 	if err != nil {

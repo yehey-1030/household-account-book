@@ -105,7 +105,7 @@ func tagFrom(tag Tag) domain.Tag {
 
 func TagDtoFrom(tag domain.Tag) Tag {
 	return Tag{
-		TagId:         0,
+		TagId:         tag.Id(),
 		TagName:       tag.Name(),
 		ArchiveTypeId: tag.ArchiveTypeId(),
 		ParentId:      ioutil.IntToNullInt(tag.ParentId()),

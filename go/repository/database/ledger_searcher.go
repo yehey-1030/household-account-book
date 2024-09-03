@@ -73,7 +73,7 @@ func (l *ledgerSearcher) Create(ctx context.Context, ledger domain.Ledger) (doma
 
 	ledgerDto := ledgerDtoFrom(ledger)
 
-	result := db.Omit("Tags").Create(&ledgerDto)
+	result := db.Create(&ledgerDto)
 	if result.Error != nil {
 		return nil, fmt.Errorf("[%s] %w", ioutil.FuncName(), result.Error)
 	}
@@ -97,13 +97,14 @@ func ledgerDtoFrom(l domain.Ledger) Ledger {
 		tags = append(tags, TagDtoFrom(t))
 	}
 	return Ledger{
-		LedgerId:      0,
+		LedgerId:      l.Id(),
 		Title:         l.Title(),
 		Memo:          l.Memo(),
 		Amount:        l.Amount(),
 		Date:          l.Date(),
 		IsExcluded:    l.IsExcluded(),
 		ArchiveTypeId: l.ArchiveType().Id(),
+		ArchiveType:   ArchiveType{ArchiveTypeId: l.ArchiveType().Id(), TypeName: l.ArchiveType().Name()},
 		Tags:          tags,
 	}
 }

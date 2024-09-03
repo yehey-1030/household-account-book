@@ -15,4 +15,5 @@ type LedgerCreateRequest struct {
 	Amount        int    `json:"amount"`
 	Date          string `json:"date"`
 	IsExcluded    bool   `json:"is_excluded"`
+	Tags          []int  `json:"tags"`
 }

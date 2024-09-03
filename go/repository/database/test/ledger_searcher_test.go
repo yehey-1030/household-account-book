@@ -17,6 +17,7 @@ import (
 type LedgerSearcherSuite struct {
 	suite.Suite
 	ledgerSearcher database.LedgerSearcher
+	tagSearcher    database.TagSearcher
 	db             *gorm.DB
 	date           time.Time
 }
@@ -66,12 +67,14 @@ func (s *LedgerSearcherSuite) SetupTest() {
 	s.db.Omit("Tags").Omit("ArchiveType").Create(ledger2)
 
 	tag1 := database.Tag{
-		TagId:   1,
-		TagName: "tag1",
+		TagId:         1,
+		TagName:       "tag1",
+		ArchiveTypeId: 3,
 	}
 	tag2 := database.Tag{
-		TagId:   2,
-		TagName: "tag2",
+		TagId:         2,
+		TagName:       "tag2",
+		ArchiveTypeId: 3,
 	}
 	s.db.Create(tag1)
 	s.db.Create(tag2)
@@ -88,6 +91,7 @@ func (s *LedgerSearcherSuite) SetupTest() {
 	s.db.Create(tagLedger2)
 
 	s.ledgerSearcher = database.NewLedgerSearcher(s.db)
+	s.tagSearcher = database.NewTagSearcher(s.db)
 }
 func (s *LedgerSearcherSuite) TearDownSuite() {
 	sqlDB, _ := s.db.DB()
@@ -114,7 +118,11 @@ func (s *LedgerSearcherSuite) TestCreate() {
 
 	today := s.date.AddDate(0, 1, 0)
 	archiveType := domain.NewArchiveType(3, "at-3")
-	toCreate := domain.NewLedger(0, 10000, "test", "test", &today, false, archiveType, nil)
+	tags := []domain.Tag{
+		domain.NewTag(3, "new_tag", 0, 3),
+		domain.NewTag(1, "tag1", 0, 3),
+	}
+	toCreate := domain.NewLedger(0, 10000, "test", "test", &today, false, archiveType, tags)
 
 	created, err := s.ledgerSearcher.Create(ctx, toCreate)
 	s.Nil(err)
