@@ -45,8 +45,8 @@ func (s *ArchiveTypeSearcherSuite) SetupTest() {
 		ArchiveTypeId: 2,
 		TypeName:      "fund",
 	}
-	s.db.Create(type1)
-	s.db.Create(type2)
+	s.db.Create(&type1)
+	s.db.Create(&type2)
 
 	s.archiveTypeSearcher = database.NewArchiveTypeSearcher(s.db)
 }

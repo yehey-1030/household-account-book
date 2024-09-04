@@ -10,7 +10,7 @@ import (
 )
 
 type ArchiveType struct {
-	ArchiveTypeId int `gorm:"column:archivetype_id"`
+	ArchiveTypeId int `gorm:"primaryKey;column:archivetype_id"`
 	TypeName      string
 }
 

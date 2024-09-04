@@ -11,7 +11,7 @@ import (
 )
 
 type Tag struct {
-	TagId         int
+	TagId         int `gorm:"primaryKey"`
 	TagName       string
 	ArchiveTypeId int `gorm:"column:archivetype_id"`
 	ParentId      sql.NullInt64

@@ -4,7 +4,7 @@ import (
 	"context"
 	"github.com/stretchr/testify/suite"
 	"github.com/yehey-1030/household-account-book/go/domain"
-	"github.com/yehey-1030/household-account-book/go/repository/database"
+	database "github.com/yehey-1030/household-account-book/go/repository/database"
 	"github.com/yehey-1030/household-account-book/go/util/ioutil"
 	"gorm.io/driver/sqlite"
 	"gorm.io/gorm"
@@ -65,10 +65,10 @@ func (s *TagSearcherSuite) SetupTest() {
 		ArchiveTypeId: 1,
 	}
 
-	s.db.Create(tag1)
-	s.db.Create(tag2)
-	s.db.Create(tag3)
-	s.db.Create(tag4)
+	s.db.Create(&tag1)
+	s.db.Create(&tag2)
+	s.db.Create(&tag3)
+	s.db.Create(&tag4)
 
 	s.tagSearcher = database.NewTagSearcher(s.db)
 }

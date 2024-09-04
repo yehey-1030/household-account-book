@@ -43,10 +43,10 @@ func (s *LedgerSearcherSuite) SetupTest() {
 	s.date = time.Now().UTC()
 
 	archiveType := database.ArchiveType{
-		ArchiveTypeId: 1,
+		ArchiveTypeId: 0,
 		TypeName:      "at-1",
 	}
-	s.db.Create(archiveType)
+	s.db.Create(&archiveType)
 	ledger1 := database.Ledger{
 		LedgerId:      1,
 		Title:         "l-1",
@@ -63,8 +63,8 @@ func (s *LedgerSearcherSuite) SetupTest() {
 		Date:          &s.date,
 		ArchiveTypeId: 1,
 	}
-	s.db.Omit("Tags").Omit("ArchiveType").Create(ledger1)
-	s.db.Omit("Tags").Omit("ArchiveType").Create(ledger2)
+	s.db.Omit("Tags").Omit("ArchiveType").Create(&ledger1)
+	s.db.Omit("Tags").Omit("ArchiveType").Create(&ledger2)
 
 	tag1 := database.Tag{
 		TagId:         1,
@@ -76,8 +76,8 @@ func (s *LedgerSearcherSuite) SetupTest() {
 		TagName:       "tag2",
 		ArchiveTypeId: 3,
 	}
-	s.db.Create(tag1)
-	s.db.Create(tag2)
+	s.db.Create(&tag1)
+	s.db.Create(&tag2)
 
 	tagLedger1 := database.TagLedgerRelation{
 		TagId:    1,
@@ -87,8 +87,8 @@ func (s *LedgerSearcherSuite) SetupTest() {
 		TagId:    2,
 		LedgerId: 1,
 	}
-	s.db.Create(tagLedger1)
-	s.db.Create(tagLedger2)
+	s.db.Create(&tagLedger1)
+	s.db.Create(&tagLedger2)
 
 	s.ledgerSearcher = database.NewLedgerSearcher(s.db)
 	s.tagSearcher = database.NewTagSearcher(s.db)
@@ -127,4 +127,8 @@ func (s *LedgerSearcherSuite) TestCreate() {
 	created, err := s.ledgerSearcher.Create(ctx, toCreate)
 	s.Nil(err)
 	s.Equal(created.Amount(), 10000)
+
+	t, err := s.tagSearcher.ListRootTag(ctx, 3)
+	s.Nil(err)
+	s.Len(t, 3)
 }

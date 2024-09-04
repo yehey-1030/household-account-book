@@ -11,7 +11,7 @@ import (
 )
 
 type Ledger struct {
-	LedgerId      int
+	LedgerId      int `gorm:"primaryKey"`
 	Amount        int
 	Date          *time.Time
 	Title         string
