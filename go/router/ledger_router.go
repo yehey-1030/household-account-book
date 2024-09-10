@@ -28,8 +28,8 @@ func (r *LedgerRouter) Routes() []handler.Route {
 }
 
 func (r *LedgerRouter) list(ctx *gin.Context) {
-	startDate, _ := time.Parse(time.DateOnly, "2024-01-10")
-	endDate, _ := time.Parse(time.DateOnly, "2024-01-15")
+	startDate, _ := time.Parse(time.DateOnly, "2024-09-10")
+	endDate, _ := time.Parse(time.DateOnly, "2024-09-13")
 
 	req := request.LedgerListRequest{
 		StartDate:     startDate,

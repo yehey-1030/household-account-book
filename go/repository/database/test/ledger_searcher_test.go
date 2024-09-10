@@ -119,8 +119,8 @@ func (s *LedgerSearcherSuite) TestCreate() {
 	today := s.date.AddDate(0, 1, 0)
 	archiveType := domain.NewArchiveType(3, "at-3")
 	tags := []domain.Tag{
-		domain.NewTag(3, "new_tag", 0, 3),
-		domain.NewTag(1, "tag1", 0, 3),
+		domain.NewTag(3, "tag", 0, 3),
+		domain.NewTag(1, "", 0, 3),
 	}
 	toCreate := domain.NewLedger(0, 10000, "test", "test", &today, false, archiveType, tags)
 

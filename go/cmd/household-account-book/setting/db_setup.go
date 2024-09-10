@@ -13,7 +13,7 @@ func SetUpDB() *gormlib.DB {
 	var db *gormlib.DB
 	var err error
 
-	db, err = gormlib.Open(mysql.Open(config.DBConfigInfo.DataSource), &gormlib.Config{Logger: logger.Default.LogMode(logger.LogLevel(config.DBConfigInfo.DBLogLevel))})
+	db, err = gormlib.Open(mysql.Open(config.DBConfigInfo.DataSource), &gormlib.Config{Logger: logger.Default.LogMode(logger.Info)})
 	if err != nil {
 		logrus.Panicf("fail to open MYSQL DB Config [%s]", err.Error())
 	}

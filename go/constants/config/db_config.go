@@ -10,5 +10,5 @@ type DBConfig struct {
 	DBTlsCa      string `env:"DB_TLS_CA" envDefault:""`
 	DBTlsCert    string `env:"DB_TLS_CERT" envDefault:""`
 	DBTlsKey     string `env:"DB_TLS_KEY" envDefault:""`
-	DBLogLevel   int    `env:"DB_LOG_LEVEL" envDefault:""`
+	DBLogLevel   int    `env:"DB_LOG_LEVEL" envDefault:"3"`
 }

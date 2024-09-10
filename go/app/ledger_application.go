@@ -48,8 +48,12 @@ func (l *ledgerApplication) List(ctx context.Context, query request.LedgerListRe
 func (l *ledgerApplication) Create(ctx context.Context, req request.LedgerCreateRequest) (response.LedgerResponse, error) {
 	targetDate := timeutil.StringToDate(req.Date)
 	archiveType := domain.NewArchiveType(req.ArchiveTypeId, "")
+	var tags []domain.Tag
+	for _, t := range req.Tags {
+		tags = append(tags, domain.NewTag(t, "", 0, 0))
+	}
 
-	toCreate := domain.NewLedger(0, req.Amount, req.Title, req.Memo, targetDate, req.IsExcluded, archiveType, nil)
+	toCreate := domain.NewLedger(0, req.Amount, req.Title, req.Memo, targetDate, req.IsExcluded, archiveType, tags)
 
 	created, err := l.ledgerService.Create(ctx, toCreate)
 	if err != nil {
@@ -60,10 +64,18 @@ func (l *ledgerApplication) Create(ctx context.Context, req request.LedgerCreate
 
 func ledgerResponseFrom(ledger domain.Ledger) response.LedgerResponse {
 	date, _ := time.Parse(time.DateOnly, ledger.Date().Format(time.DateOnly))
+	var tags []response.TagResponse
+	for _, t := range ledger.Tags() {
+		tags = append(tags, response.TagResponse{TagId: t.Id(), ArchiveTypeId: t.ArchiveTypeId(), ParentId: t.ParentId(), Name: t.Name()})
+	}
+	archiveType := response.ArchiveTypeResponse{Id: ledger.ArchiveType().Id(), Name: ledger.ArchiveType().Name()}
 	return response.LedgerResponse{
-		Title:  ledger.Title(),
-		Memo:   ledger.Memo(),
-		Amount: ledger.Amount(),
-		Date:   date,
+		LedgerId:      ledger.Id(),
+		Title:         ledger.Title(),
+		Memo:          ledger.Memo(),
+		Amount:        ledger.Amount(),
+		Date:          date,
+		ArchiveTypeId: archiveType,
+		Tags:          tags,
 	}
 }

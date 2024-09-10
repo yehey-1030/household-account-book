@@ -73,7 +73,7 @@ func (l *ledgerSearcher) Create(ctx context.Context, ledger domain.Ledger) (doma
 
 	ledgerDto := ledgerDtoFrom(ledger)
 
-	result := db.Create(&ledgerDto)
+	result := db.Create(&ledgerDto).Preload("ArchiveType").Preload("Tags").First(&ledgerDto)
 	if result.Error != nil {
 		return nil, fmt.Errorf("[%s] %w", ioutil.FuncName(), result.Error)
 	}
