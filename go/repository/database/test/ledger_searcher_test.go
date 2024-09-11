@@ -102,10 +102,8 @@ func (s *LedgerSearcherSuite) TestList() {
 	ctx := context.Background()
 
 	query := domain.LedgerPagingQuery{
-		StartDate:     s.date.AddDate(-1, 0, 0),
-		EndDate:       s.date.AddDate(0, 0, 1),
-		TagId:         1,
-		ArchiveTypeId: 1,
+		StartDate: s.date.AddDate(-1, 0, 0).Format(time.DateOnly),
+		EndDate:   s.date.AddDate(0, 0, 1).Format(time.DateOnly),
 	}
 
 	list, err := s.ledgerSearcher.List(ctx, query)

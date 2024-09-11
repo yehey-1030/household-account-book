@@ -44,12 +44,10 @@ func (l *ledgerSearcher) List(ctx context.Context, pagingQuery domain.LedgerPagi
 
 	result := db.Model(&Ledger{}).Preload("Tags").Preload("ArchiveType")
 
-	//Where("ledger.archivetype_id = ?", pagingQuery.ArchiveTypeId)
-
-	if !pagingQuery.StartDate.IsZero() {
+	if pagingQuery.StartDate != "" {
 		result = result.Where("ledger.date >= ?", pagingQuery.StartDate)
 	}
-	if !pagingQuery.EndDate.IsZero() {
+	if pagingQuery.EndDate != "" {
 		result = result.Where("ledger.date <= ?", pagingQuery.EndDate)
 	}
 

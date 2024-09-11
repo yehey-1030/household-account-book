@@ -8,7 +8,6 @@ import (
 	"github.com/yehey-1030/household-account-book/go/handler"
 	"github.com/yehey-1030/household-account-book/go/handler/servers"
 	"net/http"
-	"time"
 )
 
 type LedgerRouter struct {
@@ -28,13 +27,11 @@ func (r *LedgerRouter) Routes() []handler.Route {
 }
 
 func (r *LedgerRouter) list(ctx *gin.Context) {
-	startDate, _ := time.Parse(time.DateOnly, "2024-09-10")
-	endDate, _ := time.Parse(time.DateOnly, "2024-09-13")
 
-	req := request.LedgerListRequest{
-		StartDate:     startDate,
-		EndDate:       endDate,
-		ArchiveTypeId: 1,
+	var req request.LedgerListRequest
+	if err := ctx.ShouldBind(&req); err != nil {
+		servers.SendBindingError(ctx, err)
+		return
 	}
 
 	response, err := r.ledgerApplication.List(ctx, req)

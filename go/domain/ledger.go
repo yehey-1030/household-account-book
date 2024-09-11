@@ -66,8 +66,6 @@ func NewLedger(id, amount int, title, memo string, date *time.Time, isExcluded b
 }
 
 type LedgerPagingQuery struct {
-	StartDate     time.Time
-	EndDate       time.Time
-	ArchiveTypeId int
-	TagId         int
+	StartDate string
+	EndDate   string
 }

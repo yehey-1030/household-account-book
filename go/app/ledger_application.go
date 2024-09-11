@@ -27,10 +27,8 @@ func NewLedgerApplication(ledgerService service.LedgerService) LedgerApplication
 
 func (l *ledgerApplication) List(ctx context.Context, query request.LedgerListRequest) (response.LedgerListResponse, error) {
 	pagingQuery := domain.LedgerPagingQuery{
-		StartDate:     query.StartDate,
-		EndDate:       query.EndDate,
-		ArchiveTypeId: query.ArchiveTypeId,
-		TagId:         0,
+		StartDate: query.StartDate,
+		EndDate:   query.EndDate,
 	}
 
 	list, err := l.ledgerService.List(ctx, pagingQuery)
