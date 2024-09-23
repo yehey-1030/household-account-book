@@ -27,7 +27,7 @@ func (s *statisticRepository) Total(ctx context.Context, req domain.StatisticByT
 
 	var total int
 	result := db.Model(&database.Ledger{}).
-		Select("sum(ledger.amount)").
+		Select("COALESCE(sum(amount),0)").
 		Where("ledger.date >= ? and ledger.date <= ?", req.StartDate, req.EndDate).
 		Where("ledger.archivetype_id = ?", req.ArchiveTypeId).
 		Find(&total)

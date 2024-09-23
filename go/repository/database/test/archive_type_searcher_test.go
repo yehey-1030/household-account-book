@@ -51,6 +51,11 @@ func (s *ArchiveTypeSearcherSuite) SetupTest() {
 	s.archiveTypeSearcher = database.NewArchiveTypeSearcher(s.db)
 }
 
+func (s *ArchiveTypeSearcherSuite) TearDownSuite() {
+	sqlDB, _ := s.db.DB()
+	_ = sqlDB.Close()
+}
+
 func (s *ArchiveTypeSearcherSuite) TestList() {
 	ctx := context.Background()
 

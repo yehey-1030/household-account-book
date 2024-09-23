@@ -12,7 +12,7 @@ import (
 
 type Ledger struct {
 	LedgerId      int `gorm:"primaryKey"`
-	Amount        int
+	Amount        int `gorm:"not null; default:0"`
 	Date          *time.Time
 	Title         string
 	Memo          string
