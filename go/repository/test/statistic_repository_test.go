@@ -6,6 +6,7 @@ import (
 	"github.com/yehey-1030/household-account-book/go/domain"
 	"github.com/yehey-1030/household-account-book/go/repository"
 	"github.com/yehey-1030/household-account-book/go/repository/database"
+	"github.com/yehey-1030/household-account-book/go/util/ioutil"
 	"github.com/yehey-1030/household-account-book/go/util/timeutil"
 	"gorm.io/driver/sqlite"
 	"gorm.io/gorm"
@@ -61,7 +62,20 @@ func (s *StatisticRepositorySuite) SetupTest() {
 		Amount:        10,
 		Date:          &s.date,
 		ArchiveTypeId: 1,
-		Tags:          []database.Tag{database.Tag{TagId: 1, TagName: "tag1"}, database.Tag{TagId: 2, TagName: "tag2"}},
+		Tags: []database.Tag{
+			database.Tag{
+				TagId:         1,
+				TagName:       "tag1",
+				ParentId:      ioutil.IntToNullInt(0),
+				ArchiveTypeId: 1,
+			},
+			database.Tag{
+				TagId:         2,
+				TagName:       "tag2",
+				ParentId:      ioutil.IntToNullInt(0),
+				ArchiveTypeId: 1,
+			},
+		},
 	}
 	ledger2 := database.Ledger{
 		LedgerId:      0,
@@ -70,7 +84,14 @@ func (s *StatisticRepositorySuite) SetupTest() {
 		Amount:        20,
 		Date:          timeutil.StringToDate(s.date.Format(time.DateOnly)),
 		ArchiveTypeId: 1,
-		Tags:          []database.Tag{database.Tag{TagId: 1, TagName: "tag1"}},
+		Tags: []database.Tag{
+			database.Tag{
+				TagId:         1,
+				TagName:       "tag1",
+				ParentId:      ioutil.IntToNullInt(0),
+				ArchiveTypeId: 1,
+			},
+		},
 	}
 	ledger3 := database.Ledger{
 		LedgerId:      0,
@@ -79,7 +100,14 @@ func (s *StatisticRepositorySuite) SetupTest() {
 		Amount:        40,
 		Date:          timeutil.StringToDate(s.date.Format(time.DateOnly)),
 		ArchiveTypeId: 2,
-		Tags:          []database.Tag{database.Tag{TagId: 3, TagName: "tag3"}},
+		Tags: []database.Tag{
+			database.Tag{
+				TagId:         3,
+				TagName:       "tag3",
+				ParentId:      ioutil.IntToNullInt(0),
+				ArchiveTypeId: 1,
+			},
+		},
 	}
 	s.db.Create(&ledger1)
 	s.db.Create(&ledger2)
@@ -105,4 +133,18 @@ func (s *StatisticRepositorySuite) TestTotal() {
 	total, err := s.statisticRepository.Total(ctx, req)
 	s.Nil(err)
 	s.Equal(total, 30)
+}
+
+func (s *StatisticRepositorySuite) TestTotalListByRootTag() {
+	ctx := context.Background()
+
+	req := domain.TotalListByRootTagQuery{
+		ArchiveTypeId: 1,
+		StartDate:     s.date.AddDate(0, 0, -1).Format(time.DateOnly),
+		EndDate:       s.date.AddDate(0, 0, 1).Format(time.DateOnly),
+	}
+
+	statistics, err := s.statisticRepository.TotalListByRootTag(ctx, req)
+	s.Nil(err)
+	s.Len(statistics, 3)
 }
