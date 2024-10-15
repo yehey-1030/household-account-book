@@ -1,5 +1,7 @@
 package domain
 
+import "github.com/yehey-1030/household-account-book/go/app/response"
+
 type StatisticByTypeQuery struct {
 	StartDate     string
 	EndDate       string
@@ -18,6 +20,7 @@ type StatisticWithTag interface {
 	Total() int
 	TagId() int
 	TagName() string
+	ToResponse() response.TagStatistic
 }
 
 type statisticWithTag struct {
@@ -42,6 +45,6 @@ func (s *statisticWithTag) TagName() string {
 	return s.tagName
 }
 
-func (s *statisticWithTag) ToResponse() {
-
+func (s *statisticWithTag) ToResponse() response.TagStatistic {
+	return response.TagStatistic{TagId: s.tagId, TagName: s.tagName, Total: s.total}
 }

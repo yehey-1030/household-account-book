@@ -12,6 +12,7 @@ import (
 
 type StatisticApplication interface {
 	TotalByArchiveType(ctx context.Context, archiveTypeId int, req request.StatisticDateRangeRequest) (response.TotalByArchiveType, error)
+	TotalListOfRootTagByArchiveType(ctx context.Context, archiveTypeId int, req request.StatisticDateRangeRequest) (response.TagStatisticListResponse, error)
 }
 
 type statisticApplication struct {
@@ -35,4 +36,22 @@ func (s *statisticApplication) TotalByArchiveType(ctx context.Context, archiveTy
 	}
 
 	return response.TotalByArchiveType{Total: total}, nil
+}
+
+func (s *statisticApplication) TotalListOfRootTagByArchiveType(ctx context.Context, archiveTypeId int, req request.StatisticDateRangeRequest) (response.TagStatisticListResponse, error) {
+	reqQuery := domain.TotalListByRootTagQuery{
+		ArchiveTypeId: archiveTypeId,
+		StartDate:     req.StartDate,
+		EndDate:       req.EndDate,
+	}
+	statistics, err := s.statisticService.TotalListByRootTag(ctx, reqQuery)
+	if err != nil {
+		return response.TagStatisticListResponse{}, fmt.Errorf("[%s] %w", ioutil.FuncName(), err)
+	}
+
+	var statisticResponse response.TagStatisticListResponse
+	for _, s := range statistics {
+		statisticResponse.Statistics = append(statisticResponse.Statistics, s.ToResponse())
+	}
+	return statisticResponse, nil
 }
