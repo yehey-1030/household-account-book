@@ -22,6 +22,7 @@ func NewStatisticRouter(application app.StatisticApplication) *StatisticRouter {
 func (r *StatisticRouter) Routes() []handler.Route {
 	return []handler.Route{
 		handler.NewRoute(http.MethodGet, fmt.Sprintf("%s/types/:archivetype_id/total", r.prefix), r.totalByType),
+		handler.NewRoute(http.MethodGet, fmt.Sprintf("%s/types/:archivetype_id/tags/statistic", r.prefix), r.totalListOfRootTag),
 	}
 }
 
@@ -39,5 +40,21 @@ func (r *StatisticRouter) totalByType(ctx *gin.Context) {
 	}
 
 	response, err := r.statisticApplication.TotalByArchiveType(ctx, typeId, dateRangeRequest)
+	servers.SendResponse(ctx, response, err)
+}
+func (r *StatisticRouter) totalListOfRootTag(ctx *gin.Context) {
+	var typeId int
+	if err := ctx.ShouldBindUri(&typeId); err != nil {
+		servers.SendBindingError(ctx, err)
+		return
+	}
+
+	var dateRangeRequest request.StatisticDateRangeRequest
+	if err := ctx.ShouldBind(&dateRangeRequest); err != nil {
+		servers.SendBindingError(ctx, err)
+		return
+	}
+
+	response, err := r.statisticApplication.TotalListOfRootTagByArchiveType(ctx, typeId, dateRangeRequest)
 	servers.SendResponse(ctx, response, err)
 }
