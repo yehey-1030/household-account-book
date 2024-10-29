@@ -13,6 +13,7 @@ import (
 type StatisticRepository interface {
 	Total(ctx context.Context, req domain.StatisticByTypeQuery) (int, error)
 	TotalListByRootTag(ctx context.Context, req domain.TotalListByRootTagQuery) ([]domain.StatisticWithTag, error)
+	TotalListOfChildTags(ctx context.Context, req domain.TotalListOfChildTagQuery) ([]domain.StatisticWithTag, error)
 }
 
 type statisticRepository struct {
@@ -59,6 +60,34 @@ func (s *statisticRepository) TotalListByRootTag(ctx context.Context, req domain
 		Joins("left outer join (?) as l on tlr.ledger_id=l.ledger_id", ledgerSubQuery).
 		Joins("left outer join tag on tlr.tag_id = tag.tag_id").
 		Where("tag.archivetype_id = ? and tag.parent_id IS NULL ", req.ArchiveTypeId).
+		Group("tlr.tag_id").
+		Find(&statistics)
+
+	if result.Error != nil {
+		return nil, fmt.Errorf("[%s] %w", ioutil.FuncName(), result.Error)
+	}
+
+	var statisticDtoList []domain.StatisticWithTag
+
+	for _, statistic := range statistics {
+		statisticDtoList = append(statisticDtoList, domain.NewStatisticWithTag(statistic.Total, statistic.TagId, statistic.TagName))
+	}
+	return statisticDtoList, nil
+}
+
+func (s *statisticRepository) TotalListOfChildTags(ctx context.Context, req domain.TotalListOfChildTagQuery) ([]domain.StatisticWithTag, error) {
+	db := gorm_tx.FromContextWithDefault(ctx, s.db)
+
+	var statistics []StatisticWithTag
+
+	ledgerSubQuery := db.Model(&database.Ledger{}).Select("ledger_id,amount").Where("ledger.date >= ? and ledger.date <= ?", req.StartDate, req.EndDate)
+
+	result := db.Model(&database.TagLedgerRelation{}).
+		Table("`tag_ledger_relation` as tlr").
+		Select("tag.tag_id, tag.tag_name, COALESCE(sum(l.amount),0) as total").
+		Joins("left outer join (?) as l on tlr.ledger_id=l.ledger_id", ledgerSubQuery).
+		Joins("left outer join tag on tlr.tag_id = tag.tag_id").
+		Where("tag.parent_id = ? ", req.TagId).
 		Group("tlr.tag_id").
 		Find(&statistics)
 

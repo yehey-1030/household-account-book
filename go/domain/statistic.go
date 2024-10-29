@@ -16,6 +16,12 @@ type TotalListByRootTagQuery struct {
 	ArchiveTypeId int
 }
 
+type TotalListOfChildTagQuery struct {
+	StartDate string
+	EndDate   string
+	TagId     int
+}
+
 type StatisticWithTag interface {
 	Total() int
 	TagId() int
